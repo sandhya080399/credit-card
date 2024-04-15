@@ -1,0 +1,122 @@
+import numpy as np
+import pandas as pd
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
+data = pd.read_csv('/content/drive/MyDrive/archive/UCI_Credit_Card.csv')
+data
+data.info()
+corr = data.corr()
+
+plt.figure(figsize=(18, 15))
+sns.heatmap(corr, annot=True, vmin=-1.0, cmap='mako')
+plt.title("Correlation Heatmap")
+plt.show()
+{'EDUCATION': 'EDU'}.items()
+def onehot_encode(df, column_dict):
+    df = df.copy()
+    for column, prefix in column_dict.items():
+        dummies = pd.get_dummies(df[column], prefix=prefix)
+        df = pd.concat([df, dummies], axis=1)
+        df = df.drop(column, axis=1)
+    return df
+def preprocess_inputs(df):
+    df = df.copy()
+
+    # Drop ID
+    df = df.drop('ID', axis=1)
+
+    df = onehot_encode(
+        df,
+        {
+            'EDUCATION': 'EDU',
+            'MARRIAGE': 'MAR'
+        }
+    )
+
+    # Split df into X and y
+    y = df['default.payment.next.month'].copy()
+    X = df.drop('default.payment.next.month', axis=1).copy()
+    # Scale X with a standard scaler
+    scaler = StandardScaler()
+    X = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
+
+    return X, y
+X, y = preprocess_inputs(data)
+print(X)
+import numpy as np
+import pandas as pd
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
+data = pd.read_csv('/content/drive/MyDrive/archive/UCI_Credit_Card.csv')
+print(data)
+data.info()
+corr = data.corr()
+
+plt.figure(figsize=(18, 15))
+sns.heatmap(corr, annot=True, vmin=-1.0, cmap='mako')
+plt.title("Correlation Heatmap")
+plt.show()
+#preprocessing
+{'EDUCATION': 'EDU'}.items()
+def onehot_encode(df, column_dict):
+    df = df.copy()
+    for column, prefix in column_dict.items():
+        dummies = pd.get_dummies(df[column], prefix=prefix)
+        df = pd.concat([df, dummies], axis=1)
+        df = df.drop(column, axis=1)
+    return df
+def preprocess_inputs(df):
+    df = df.copy()
+
+    # Drop ID
+    df = df.drop('ID', axis=1)
+
+    df = onehot_encode(
+        df,
+        {
+            'EDUCATION': 'EDU',
+            'MARRIAGE': 'MAR'
+        }
+    )
+
+    # Split df into X and y
+    y = df['default.payment.next.month'].copy()
+    X = df.drop('default.payment.next.month', axis=1).copy()
+
+    # Scale X with a standard scaler
+    scaler = StandardScaler()
+    X = pd.DataFrame(scaler.fit_transform(X), columns=X.columns)
+
+    return X, y
+X, y = preprocess_inputs(data)
+print(X)
+print(y)
+{column: len(X[column].unique()) for column in X.columns}
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7, random_state=123)
+models = {
+    LogisticRegression(): "   Logistic Regression",
+    SVC():                "Support Vector Machine",
+    MLPClassifier():      "        Neural Network"
+
+}
+
+for model in models.keys():
+    model.fit(X_train, y_train)
+for model, name in models.items():
+    print(name + ": {:.2f}%".format(model.score(X_test, y_test) * 100))
